@@ -1,0 +1,55 @@
+{
+    "type": "record",
+    "name": "PositionRecordsValue",
+    "namespace": "com.pearlai.kafka.enrichMessages",
+    "fields": [
+        {
+            "name": "tx",
+            "type": [
+                "null",
+                "int"
+            ],
+            "default": "null"
+        },
+        {
+            "name": "rssi",
+            "type": [
+                "null",
+                "int"
+            ],
+            "default": "null"
+        },
+        {
+            "name": "reader_id",
+            "type": [
+                "null",
+                "int"
+            ],
+            "default": "null"
+        },
+        {
+            "name": "sensor_id",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": "null"
+        },
+        {
+            "name": "timestamp",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": "null"
+        },
+        {
+            "name": "card_version",
+            "type": [
+                "null",
+                "int"
+            ],
+            "default": "null"
+        }
+    ]
+}

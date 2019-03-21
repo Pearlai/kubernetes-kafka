@@ -1,0 +1,358 @@
+{
+    // Should think about whether more than one stream can fit in an application
+    "texts": [
+        {
+            "stream": "processed_texts",
+            "database-table": "N/A",
+            "topics_required": [
+                "enriched-messages",
+                "processed_texts",
+            ],
+            "pseudo": "
+                final KStream<String, GenericRecord> readerEvents = streams.builder('enriched-messages')
+                final KTable<String, GenericRecord> processedTexts = builder.table('processed_texts');
+                // final KTable<String, GenericRecord> activeTenants = builder.table('pearlai-prod.common.customer'); // try mapping these tables to profile -> array of customers
+                // final KTable<String, GenericRecord> profileWhitelist = builder.table('pearlai-prod.common.profile_whitelist');
+                final joinStream = readerEvents.leftJoin(processed_texts) // learn how to join by keys
+
+                filterPredicate = (
+                    Key<sensor_id> Value<GenericRecord>
+                    # Learn  how to output values in an avro
+                    int Interval;
+                    if (value.user_interval) {
+                        Interval = value.user_interval
+                    } else {
+                        Interval = value.centre_interval
+                    }
+                        
+                    if(value.customer_ids.length > value.text_limit)
+                        Return false;
+
+                    If (value.timestamp - value.text_sent_at > interval)
+                        Return true
+                )
+
+                joinStream.filter(filterPredicate)
+                    .groupBy((key, value) -> value.profile_id) // Might need to be .map
+                    .leftJoin(whitelist) //view how records come out
+                    .map -> key = centre_id
+                    .join(activeTenants) // view how records come out // try flatmap
+                    // hopefully have 3 arrays at this point
+                    // texts_sent, whitelist, remaining
+                    // if empty(whitelist) then use remaining else use whitelist
+                    .map
+                    // pluck random number
+                    // append to text sent array
+                    // add to text to send?
+                    // add now time as text_processed_at
+                    .toStream('processed_texts') // bit convoluted
+                    // at this point bthe same message will come back into this stream logic, but the text processed at and maybe number of texts sent willl stop it from going back in again
+                    // resulting in s texts sents per person with atleast 8 min interval between
+             ",
+             "schemas": {
+                "value": {
+                    "namespace": "pearlai.enriched.avro",
+                    "name": "processed_text",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "profile_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "reader_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "text_to_send",
+                            "type": "int"
+                        },
+                        {
+                            "name": "text_processed_at",
+                            "type": "double"
+                        },
+                        {
+                            "name": "customer_ids",
+                            "type": {
+                                "type": "array",
+                                "items": "int"
+                            }
+                        },
+                        {
+                            "name": "gender",
+                            "type": "string"
+                        },
+                        {
+                            "name": "postcode",
+                            "type": "string"
+                        },
+                        {
+                            "name": "age_group",
+                            "type": "string"
+                        },
+                        {
+                            "name": "house_income",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_children",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_cars",
+                            "type": "string"
+                        },
+                        {
+                            "name": "shopping_frequency",
+                            "type": "string"
+                        },
+                        {
+                            "name": "marital_status",
+                            "type": "string"
+                        },
+                        {
+                            "name": "employment_status",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "key": ""
+             }
+        },
+        {
+            "stream": "sent_texts",
+            "database-table": "sent_texts",
+            "topics_required": [
+                "processed_texts",
+            ],
+            "pseudo": "
+                Consumer consumming from processed_texts
+                foreach message:
+                    send text
+                    store to db
+                    push onto queue
+                QUEUE to hold each sent
+
+                Producer consuming from queue and producing to a new sent_texts topic
+             ",
+             "schemas": {
+                "value": {
+                    "namespace": "pearlai.enriched.avro",
+                    "name": "sent_text",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "profile_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "reader_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "text_sent_at",
+                            "type": "double"
+                        },
+                        {
+                            "name": "ad_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "customer_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "send_status",
+                            "type": "string"
+                        },
+                        {
+                            "name": "text_content",
+                            "type": "string"
+                        },
+                        {
+                            "name": "gender",
+                            "type": "string"
+                        },
+                        {
+                            "name": "postcode",
+                            "type": "string"
+                        },
+                        {
+                            "name": "age_group",
+                            "type": "string"
+                        },
+                        {
+                            "name": "house_income",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_children",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_cars",
+                            "type": "string"
+                        },
+                        {
+                            "name": "shopping_frequency",
+                            "type": "string"
+                        },
+                        {
+                            "name": "marital_status",
+                            "type": "string"
+                        },
+                        {
+                            "name": "employment_status",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "key": ""
+            }
+        },
+        {
+            "stream": "customer_texts_count",
+            "database-table": "customer_texts",
+            "topics_required": [
+                "sent_texts",
+            ],
+            "pseudo": "
+                final KTable<String, GenericRecord> customerTexts = builder.table('sent_texts');
+                    .groupBy((key, avro) -> avro.customer_id + demo1 + demo2 + etc) // key = customer_id + demographs (gets count per customer id per group
+                    .count();
+             ",
+             "schemas": {
+                "value": {
+                    "namespace": "pearlai.enriched.avro",
+                    "name": "aggregated_customer_texts",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "minute",
+                            "type": "long"
+                        },
+                        {
+                            "name": "texts",
+                            "type": "int"
+                        },
+                        {
+                            "name": "centre_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "customer_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "gender",
+                            "type": "string"
+                        },
+                        {
+                            "name": "postcode",
+                            "type": "string"
+                        },
+                        {
+                            "name": "age_group",
+                            "type": "string"
+                        },
+                        {
+                            "name": "house_income",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_children",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_cars",
+                            "type": "string"
+                        },
+                        {
+                            "name": "shopping_frequency",
+                            "type": "string"
+                        },
+                        {
+                            "name": "marital_status",
+                            "type": "string"
+                        },
+                        {
+                            "name": "employment_status",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "key": ""
+            }
+        },
+        {
+            "stream": "centre_texts_count",
+            "database-table": "centre_texts",
+            "topics_required": [
+                "sent_texts",
+            ],
+            "pseudo": "
+                final KTable<String, GenericRecord> centreTexts = builder.table('sent_texts');
+                    .groupBy((key, avro) -> avro.centre_id + demo1 + demo2 + etc) // key = centre_id + demographs (gets count per customer id per group
+                    .count();
+            ",
+            "schemas": {
+                "value": {
+                    "namespace": "pearlai.enriched.avro",
+                    "name": "aggregated_centre_texts",
+                    "type": "record",
+                    "fields": [
+                        {
+                            "name": "minute",
+                            "type": "long"
+                        },
+                        {
+                            "name": "texts",
+                            "type": "int"
+                        },
+                        {
+                            "name": "centre_id",
+                            "type": "int"
+                        },
+                        {
+                            "name": "gender",
+                            "type": "string"
+                        },
+                        {
+                            "name": "postcode",
+                            "type": "string"
+                        },
+                        {
+                            "name": "age_group",
+                            "type": "string"
+                        },
+                        {
+                            "name": "house_income",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_children",
+                            "type": "string"
+                        },
+                        {
+                            "name": "no_cars",
+                            "type": "string"
+                        },
+                        {
+                            "name": "shopping_frequency",
+                            "type": "string"
+                        },
+                        {
+                            "name": "marital_status",
+                            "type": "string"
+                        },
+                        {
+                            "name": "employment_status",
+                            "type": "string"
+                        }
+                    ]
+                },
+                "key": ""
+            }
+        }
+    ]
+}

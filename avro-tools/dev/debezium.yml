@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connect
+  namespace: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debezium
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: debezium
+    spec:
+      containers:
+      - name: connect
+        image: 372456142993.dkr.ecr.eu-west-1.amazonaws.com/pearlai/connect:0.9
+        imagePullPolicy: Always
+        env:
+        # Comes from headless service, must define pod names specifically
+        - name: ADVERTISED_HOST_NAME
+          value: connect.kafka
+        - name: ADVERTISED_PORT # remove and joinwith above var
+          value: "8083"
+        - name: HOST_NAME # defines the address for the rest service to listen on (WITHIN THE CONTAINER!)
+          value: "0.0.0.0"
+        - name: REST_PORT
+          value: "8083"
+        - name: BOOTSTRAP_SERVERS
+          value: bootstrap.kafka:9092
+        - name: GROUP_ID
+          value: "1"
+        - name: CONFIG_STORAGE_TOPIC
+          # needs good naming structure based on cluster name/dns and pods
+          value: debezium_configs
+        - name: OFFSET_STORAGE_TOPIC
+          # needs good naming structure based on cluster name/dns and pods
+          value: debezium_offsets
+        - name: STATUS_STORAGE_TOPIC
+          # needs good naming structure based on cluster name/dns and pods
+          value: debezium_statuses
+        - name: KEY_CONVERTER
+          value: io.confluent.connect.avro.AvroConverter
+        - name: VALUE_CONVERTER
+          value: io.confluent.connect.avro.AvroConverter
+        - name: INTERNAL_KEY_CONVERTER
+          value: org.apache.kafka.connect.json.JsonConverter
+        - name: INTERNAL_VALUE_CONVERTER
+          value: org.apache.kafka.connect.json.JsonConverter
+        - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+          value: http://avro-schemas:80
+        - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+          value: http://avro-schemas:80
+        - name: JMX_PORT
+          value: "5555"
+        - name: LOG_LEVEL
+          value: INFO
+        - name: STORAGE_REPLICATION_FACTOR
+          value: "1"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8083
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8083
+          initialDelaySeconds: 60
+          periodSeconds: 10
+        ports:
+        - name: rest
+          containerPort: 8083
+        volumeMounts:
+        - name: config
+          mountPath: /etc/debezium-connect
+      volumes:
+      - name: config
+        configMap:
+          name: avro-tools-config

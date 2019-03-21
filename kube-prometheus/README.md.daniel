@@ -1,0 +1,21 @@
+Cant remember where this came from or the commands used to install.
+
+Check git for kube prometheus
+
+Lots to learn on config
+
+This is basically a big service that checks all services in all namespaces and automatically configures prometheus exports for them.
+
+However there are complexities. When I used this certain actions would no longer work, like port-forwarding
+ - the user that I was no longer had the abilities to initiate port forwarding
+ - I may have got around this by creating a new user with specific properties (which pro[erties need applied is confusing). That user has to be diefined as the user in the .kube/config cluster definition.
+
+I had to make changes to the actual cluster definition, how api requests are authorized, chaging these parameters on the kubelet
+
+Check prod cluster defintion for these changes:
+ - kops edit cluster tsagg-web.prod.ie.pearlai.com
+
+ ~ FIND REPO
+ ~~ READ USAGE
+ ~~~ DOWNLOAD FILES
+ ~~~~ USE prod server in git to check previous usage
