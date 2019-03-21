@@ -2,7 +2,7 @@
 
 SLEEP=10
 
-[ -z "$1" ] && echo "First argument should be the the environment type to build" && exit 1
+[ -z "$1" ] && echo "First argument should be the the environment type to build. Exiting" && exit 1
 
 if [[ $1 != "dev" ]] && [[ $1 != 'prod' ]]; then
     echo "Please supply either dev or prod as the first argument" && exit 1
