@@ -1,0 +1,13 @@
+# A ClusterIp service to create DNS records
+# DNS: connect.kafka.svc.cluster.local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: connect
+  namespace: kafka
+spec:
+  ports:
+  - port: 8083
+  selector:
+    app: debezium

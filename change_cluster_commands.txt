@@ -1,0 +1,13 @@
+/**
+ * DEVELOPER CLUSTER
+ *\
+
+eval $(./update-environment.sh tsagg-web.dev.ie.pearlai.com ie-pearlai-com-state-store Z3QE0C8TP61ZU vpc-005d0daa7d1f30f63)
+
+---
+
+/**
+ * PRODUCTION CLUSTER
+ *\
+
+eval $(./update-environment.sh tsagg-web.prod.ie.pearlai.com ie-pearlai-com-state-store Z2FBK2J2IC2YAJ vpc-04e1c960) 

@@ -1,0 +1,15 @@
+{
+    "namespace": "com.pearlai.kafka.enrichMessages",
+    "name": "PositionRecordsKey",
+    "type": "record",
+    "fields": [
+        {
+            "name": "sensor_id",
+            "type": [
+                "null",
+                "long"
+            ],
+            "default": "null"
+        }
+    ]
+}
