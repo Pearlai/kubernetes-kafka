@@ -32,5 +32,5 @@ echo "## Applying Avro $1"
 kubectl apply -f avro-tools/$1
 SLEEP=5
 getTimer
-echo "## Applying Ubuntu Curl $1"
-kubectl apply -f utils-pod/ubuntu.yaml
+echo "## Applying Ubuntu Curl"
+kubectl apply -f utilities/ubuntu.yml
