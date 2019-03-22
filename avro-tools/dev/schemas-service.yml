@@ -15,7 +15,7 @@ metadata:
   name: avro-schemas-ext
   namespace: kafka
 spec:
-  selector:a
+  selector:
     app: schema-registry
   ports:
   - protocol: TCP
