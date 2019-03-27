@@ -41,14 +41,12 @@ spec:
           ### These fields are optional 
           if [ -z "$INPUT_TOPICS" ];  then
             echo "No INPUT_TOPICS supplied - no input topic offsets will be altered"
-            tail -f /dev/null
           else 
             CMD_STRING+="--input-topics $INPUT_TOPICS"
           fi
 
           if [ -z "$INTERMEDIATE_TOPICS" ];  then
             echo "No INTERMEDIATE_TOPICS supplied - no through topic offsets will be altered"
-            tail -f /dev/null
           else 
             CMD_STRING+="--intermediate-topics $INTERMEDIATE_TOPICS"
           fi
