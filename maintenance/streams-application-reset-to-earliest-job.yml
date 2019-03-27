@@ -16,7 +16,7 @@ spec:
           value: "bootstrap.kafka:9092"
         # the following must be edited per job
         - name: APPLICATION_ID
-          value: "Enrich_'Messages"
+          value: "Enrich_Messages"
         # the following are optional, if blank will not be used
         - name: INPUT_TOPICS  # Comma separated list of topics
           value: "test-raw-messages"
