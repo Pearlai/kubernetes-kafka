@@ -8,3 +8,17 @@ spec:
   - port: 80
   selector:
     app: schema-registry
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: avro-schemas-ext
+  namespace: kafka
+spec:
+  selector:
+    app: schema-registry
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer

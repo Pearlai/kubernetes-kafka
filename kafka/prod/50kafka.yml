@@ -45,12 +45,14 @@ spec:
           mountPath: /opt/kafka/libs/extensions
       containers:
       - name: broker
-        image: solsson/kafka:2.1.1@sha256:8bc8242c649c395ab79d76cc83b1052e63b4efea7f83547bf11eb3ef5ea6f8e1
+        image: solsson/kafka:2.1.0@sha256:ac3f06d87d45c7be727863f31e79fbfdcb9c610b51ba9cf03c75a95d602f15e1
         env:
         - name: CLASSPATH
           value: /opt/kafka/libs/extensions/*
         - name: KAFKA_LOG4J_OPTS
           value: -Dlog4j.configuration=file:/etc/kafka/log4j.properties
+        - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
+          value: "1"
         - name: JMX_PORT
           value: "5555"
         ports:
@@ -66,16 +68,17 @@ spec:
         lifecycle:
           preStop:
             exec:
-             command: ["sh", "-ce", "kill -s TERM 1; while $(kill -0 1 2>/dev/null); do sleep 1; done"]
+              command: ["sh", "-ce", "kill -s TERM 1; while $(kill -0 1 2>/dev/null); do sleep 1; done"]
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 0.4
+            memory: 1024M
           limits:
             # This limit was intentionally set low as a reminder that
             # the entire Yolean/kubernetes-kafka is meant to be tweaked
             # before you run production workloads
-            memory: 600Mi
+            cpu: 0.6
+            memory: 2048M
         readinessProbe:
           tcpSocket:
             port: 9092
