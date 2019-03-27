@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: delete-topics
+  namespace: kafka
+spec:
+  template:
+    metadata:
+      name: delete-topics
+    spec:
+      containers:
+      - name: kafka
+        image: solsson/kafka:2.1.1@sha256:8bc8242c649c395ab79d76cc83b1052e63b4efea7f83547bf11eb3ef5ea6f8e1
+        env:
+        - name: ZOOKEEPER
+          value: zookeeper.kafka:2181
+        # the following must be edited per job, must be a single topic or comma separated list of topics 
+        - name: TOPICS
+          value: "Enrich_Messages-KSTREAM-REDUCE-STATE-STORE-0000000001-changelog,Enrich_Messages-KTABLE-SUPPRESS-STATE-STORE-0000000004-changelog,test-max-rssi,test-raw-messages"
+        command:
+        - - /bin/bash
+        - -ce
+        - >
+          if [ -z "$TOPICS" ];  then
+            echo "Please set the TOPICS env (comma-separated) and re-create the job"
+            tail -f /dev/null
+          fi
+
+          echo "TOPICS TO DELETE..."
+          echo -n $TOPICS | sed 's/,/\n/g'
+
+          ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $TOPICS
+      restartPolicy: Never
+  backoffLimit: 3
