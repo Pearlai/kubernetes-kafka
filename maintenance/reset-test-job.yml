@@ -1,0 +1,76 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: delete-topics
+  namespace: kafka
+spec:
+  template:
+    metadata:
+      name: delete-topics
+    spec:
+      containers:
+      - name: kafka
+        image: solsson/kafka:2.1.1@sha256:8bc8242c649c395ab79d76cc83b1052e63b4efea7f83547bf11eb3ef5ea6f8e1
+        env:
+        - name: ZOOKEEPER
+          value: zookeeper.kafka:2181
+        - name: BOOTSTRAP
+          value: "bootstrap.kafka:9092"
+        # the following must be edited per job, must be a single topic or comma separated list of topics 
+        - name: OUTPUT_TOPICS
+          value: "test-max-rssi,test-raw-messages" 
+        # the following must be edited per job
+        - name: APPLICATION_ID
+          value: "Enrich_'Messages"
+        # the following are optional, if blank will not be used
+        - name: INPUT_TOPICS  # Comma separated list of topics
+          value: ""
+        - name: INTERMEDIATE_TOPICS  # Comma separated list of topics
+          value: ""
+        command:
+        - /bin/bash
+        - -ce
+        - >
+          if [ -z "$OUTPUT_TOPICS" ];  then
+            echo "Please set the TOPICS env (comma-separated) and re-create the job"
+            tail -f /dev/null
+          fi
+
+          if [ -z "$BOOTSTRAP" ];  then
+            echo "Please set the broker BOOTSTRAP env and re-create the job"
+            tail -f /dev/null
+          fi
+
+          if [ -z "$APPLICATION_ID" ];  then
+            echo "Please set the APPLICATION_ID env and re-create the job"
+            tail -f /dev/null
+          fi
+
+          echo "OUTPUT TOPICS TO DELETE:";
+          echo -n $TOPICS | sed 's/,/\n/g';
+
+          ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $TOPICS
+
+          echo "Finished deleting topics..."
+
+          CMD_STRING=""
+          ### These fields are optional 
+          if [ -z "$INPUT_TOPICS" ];  then
+            echo "No INPUT_TOPICS supplied - no input topic offsets will be altered"
+            tail -f /dev/null
+          else 
+            CMD_STRING+="--input-topics $INPUT_TOPICS "
+          fi
+
+          if [ -z "$INTERMEDIATE_TOPICS" ];  then
+            echo "No INTERMEDIATE_TOPICS supplied - no through topic offsets will be altered"
+            tail -f /dev/null
+          else 
+            CMD_STRING+="--intermediate-topics $INTERMEDIATE_TOPICS "
+          fi
+
+          echo "Starting application reset!"
+          ./bin/kafka-streams-application-reset.sh --bootstrap-servers $BOOTSTRAP --application-id $APPLICATION_ID $CMD_STRING
+          echo "Finished application reset!"
+      restartPolicy: Never
+  backoffLimit: 3

@@ -18,7 +18,7 @@ spec:
         - name: TOPICS
           value: "Enrich_Messages-KSTREAM-REDUCE-STATE-STORE-0000000001-changelog,Enrich_Messages-KTABLE-SUPPRESS-STATE-STORE-0000000004-changelog,test-max-rssi,test-raw-messages"
         command:
-        - - /bin/bash
+        - /bin/bash
         - -ce
         - >
           if [ -z "$TOPICS" ];  then
@@ -26,9 +26,11 @@ spec:
             tail -f /dev/null
           fi
 
-          echo "TOPICS TO DELETE..."
-          echo -n $TOPICS | sed 's/,/\n/g'
+          echo "TOPICS TO DELETE:";
+          echo -n $TOPICS | sed 's/,/\n/g';
 
           ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $TOPICS
+
+          echo "Finished deleting topics... Ending Job!"
       restartPolicy: Never
   backoffLimit: 3
