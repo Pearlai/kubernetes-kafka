@@ -23,10 +23,9 @@ spec:
         - name: INTERMEDIATE_TOPICS  # Comma separated list of topics
           value: ""
         command:
-        - - /bin/bash
+        - /bin/bash
         - -ce
         - >
-          ### These fields are required
           if [ -z "$BOOTSTRAP" ];  then
             echo "Please set the broker BOOTSTRAP env and re-create the job"
             tail -f /dev/null
