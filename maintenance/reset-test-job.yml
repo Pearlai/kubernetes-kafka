@@ -21,7 +21,7 @@ spec:
           value: "test-max-rssi,test-raw-messages" 
         # the following must be edited per job
         - name: APPLICATION_ID
-          value: "Enrich_'Messages"
+          value: "Enrich_Messages"
         # the following are optional, if blank will not be used
         - name: INPUT_TOPICS  # Comma separated list of topics
           value: ""
@@ -47,9 +47,9 @@ spec:
           fi
 
           echo "OUTPUT TOPICS TO DELETE:";
-          echo -n $TOPICS | sed 's/,/\n/g';
+          echo -n $OUTPUT_TOPICS | sed 's/,/\n/g';
 
-          ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $TOPICS
+          ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $OUTPUT_TOPICS
 
           echo "Finished deleting topics..."
 
