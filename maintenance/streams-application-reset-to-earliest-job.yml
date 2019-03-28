@@ -36,7 +36,7 @@ spec:
             tail -f /dev/null
           fi
 
-          CMD_STRING=""
+          CMD_STRING="";
           if [ -z "$INPUT_TOPICS" ]; then
               echo "No INPUT_TOPICS supplied - no input topic offsets will be altered"
           else
@@ -49,8 +49,8 @@ spec:
             CMD_STRING+="--intermediate-topics $INTERMEDIATE_TOPICS "
           fi
 
-          echo "# Starting application reset!"
-          ./bin/kafka-streams-application-reset.sh --bootstrap-servers "$BOOTSTRAP" --application-id "$APPLICATION_ID" "$CMD_STRING"
+          echo "# Starting application reset!";
+          ./bin/kafka-streams-application-reset.sh --bootstrap-servers "$BOOTSTRAP" --application-id "$APPLICATION_ID" "$CMD_STRING";
           echo "# Finished application reset!"
       restartPolicy: Never
   backoffLimit: 3

@@ -29,7 +29,7 @@ spec:
           echo "# TOPICS TO DELETE:";
           echo -n $TOPICS | sed 's/,/\n/g';
 
-          ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $TOPICS
+          ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $TOPICS;
 
           echo "# Finished deleting topics... Ending Job!"
       restartPolicy: Never
