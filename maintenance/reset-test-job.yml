@@ -4,7 +4,6 @@ metadata:
   name: delete-topics
   namespace: kafka
 spec:
-  ttlSecondsAfterFinished: 0
   template:
     metadata:
       name: delete-topics
