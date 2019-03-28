@@ -4,6 +4,7 @@ metadata:
   name: streams-application-reset-to-earliest
   namespace: kafka
 spec:
+  ttlSecondsAfterFinished: 0
   template:
     metadata:
       name: streams-application-reset-to-earliest
