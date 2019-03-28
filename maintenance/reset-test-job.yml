@@ -31,19 +31,19 @@ spec:
         - /bin/bash
         - -ce
         - >
-          if [ -z "$OUTPUT_TOPICS" ];  then
-              echo "Please set the TOPICS env (comma-separated) and re-create the job"
-              tail -f /dev/null
+          if [ -z "$OUTPUT_TOPICS" ]; then
+            echo "Please set the TOPICS env (comma-separated) and re-create the job"
+            tail -f /dev/null
           fi
 
-          if [ -z "$BOOTSTRAP" ];  then
-              echo "Please set the broker BOOTSTRAP env and re-create the job"
-              tail -f /dev/null
+          if [ -z "$BOOTSTRAP" ]; then
+            echo "Please set the broker BOOTSTRAP env and re-create the job"
+            tail -f /dev/null
           fi
 
-          if [ -z "$APPLICATION_ID" ];  then
-              echo "Please set the APPLICATION_ID env and re-create the job"
-              tail -f /dev/null
+          if [ -z "$APPLICATION_ID" ]; then
+            echo "Please set the APPLICATION_ID env and re-create the job"
+            tail -f /dev/null
           fi
 
           echo "OUTPUT TOPICS TO DELETE:";
@@ -54,20 +54,20 @@ spec:
           echo "Finished deleting topics..."
 
           CMD_STRING=""
-          if [ -z "$INPUT_TOPICS" ];  then
-              echo "No INPUT_TOPICS supplied - no input topic offsets will be altered"
+          if [ -z "$INPUT_TOPICS" ]; then
+            echo "No INPUT_TOPICS supplied - no input topic offsets will be altered"
           else 
-              CMD_STRING+="--input-topics $INPUT_TOPICS "
+            CMD_STRING+="--input-topics $INPUT_TOPICS "
           fi
 
-          if [ -z "$INTERMEDIATE_TOPICS" ];  then
-              echo "No INTERMEDIATE_TOPICS supplied - no through topic offsets will be altered"
+          if [ -z "$INTERMEDIATE_TOPICS" ]; then
+            echo "No INTERMEDIATE_TOPICS supplied - no through topic offsets will be altered"
           else 
-              CMD_STRING+="--intermediate-topics $INTERMEDIATE_TOPICS "
+            CMD_STRING+="--intermediate-topics $INTERMEDIATE_TOPICS "
           fi
 
-          echo "Starting application reset!"
+          echo "# Starting application reset!"
           ./bin/kafka-streams-application-reset.sh --bootstrap-servers $BOOTSTRAP --application-id $APPLICATION_ID $CMD_STRING
-          echo "Finished application reset!"
+          echo "# Finished application reset!"
       restartPolicy: Never
   backoffLimit: 3

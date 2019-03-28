@@ -26,11 +26,11 @@ spec:
             tail -f /dev/null
           fi
 
-          echo "TOPICS TO DELETE:";
+          echo "# TOPICS TO DELETE:";
           echo -n $TOPICS | sed 's/,/\n/g';
 
           ./bin/kafka-topics.sh --zookeeper $ZOOKEEPER --delete --topic $TOPICS
 
-          echo "Finished deleting topics... Ending Job!"
+          echo "# Finished deleting topics... Ending Job!"
       restartPolicy: Never
   backoffLimit: 3
